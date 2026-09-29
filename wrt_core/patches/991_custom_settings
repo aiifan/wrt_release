@@ -22,5 +22,9 @@ fi
 uci set dhcp.lan.domain='home.arpa'
 uci set dhcp.@dnsmasq[0].domain='home.arpa'
 uci set dhcp.@dnsmasq[0].local='/home.arpa/'
+
+# 关闭 DNS 重绑定保护（允许上游 DNS 返回 RFC1918 私网地址的解析结果）
+uci set dhcp.@dnsmasq[0].rebind_protection='0'
+
 uci commit dhcp
 /etc/init.d/dnsmasq restart

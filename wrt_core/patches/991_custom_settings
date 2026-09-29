@@ -17,3 +17,8 @@ if uci show dropbear | grep -q "DirectInterface"; then
     uci commit dropbear
     /etc/init.d/dropbear restart
 fi
+
+# 修改 DHCP 域名后缀为 home.arpa
+uci set dhcp.lan.domain='home.arpa'
+uci commit dhcp
+/etc/init.d/dnsmasq restart

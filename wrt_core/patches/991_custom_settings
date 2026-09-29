@@ -20,5 +20,7 @@ fi
 
 # 修改 DHCP 域名后缀为 home.arpa
 uci set dhcp.lan.domain='home.arpa'
+uci set dhcp.@dnsmasq[0].domain='home.arpa'
+uci set dhcp.@dnsmasq[0].local='/home.arpa/'
 uci commit dhcp
 /etc/init.d/dnsmasq restart

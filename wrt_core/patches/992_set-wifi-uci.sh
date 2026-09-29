@@ -87,14 +87,14 @@ EOF
 }
 
 jdc_ax1800_pro_wifi_cfg() {
-	configure_wifi 0 149 HE80 20 'JDC_AX1800PRO_5G' '12345678'
-	configure_wifi 1 1 HE20 20 'JDC_AX1800PRO' '12345678'
+	configure_wifi 0 149 HE80 20 'ImmortalWRT_5G' 'qweasdzxc1234'
+	configure_wifi 1 1 HE20 20 'ImmortalWRT_2.4G' 'qweasdzxc1234'
 }
 
 jdc_ax6600_wifi_cfg() {
-	configure_wifi 0 149 HE80 22 'JDC_AX6600_5G1' '12345678'
-	configure_wifi 1 1 HE20 22 'JDC_AX6600' '12345678'
-	configure_wifi 2 44 HE160 23 'JDC_AX6600_5G2' '12345678'
+	configure_wifi 0 149 HE80 22 'JDC_AX6600_5.8G' '12345678'
+	configure_wifi 1 1 HE20 22 'JDC_AX6600_2.4G' '12345678'
+	configure_wifi 2 44 HE160 23 'JDC_AX6600_5.2G' '12345678'
 }
 
 redmi_ax5_wifi_cfg() {

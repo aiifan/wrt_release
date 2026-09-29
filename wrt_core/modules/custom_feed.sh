@@ -169,9 +169,9 @@ install_custom_feed() {
     local required_feed_dirs=(
         cups tcping v2ray-geodata luci-lib-taskd luci-app-openclash
         luci-app-quickstart luci-app-store luci-app-homeproxy luci-app-mosdns
-        luci-app-passwall nikki luci-app-nikki mihomo-meta
+        nikki luci-app-nikki mihomo-meta
         open-app-filter luci-app-oaf lucky luci-app-lucky luci-app-easytier
-        luci-app-emmc-health
+        luci-app-emmc-health luci-app-openlist2 luci-app-pushbot
     )
     local custom_feed_sources=()
     local missing_feed_dirs=()
@@ -193,8 +193,8 @@ install_custom_feed() {
     custom_feed_sources=(
         "kenzok8/small-package|https://github.com/kenzok8/small-package.git||${base_custom_feed_packages[*]}"
         "sbwml/luci-app-mosdns|https://github.com/sbwml/luci-app-mosdns.git|v5|mosdns luci-app-mosdns"
-        "Openwrt-Passwall/openwrt-passwall|https://github.com/Openwrt-Passwall/openwrt-passwall.git|main|luci-app-passwall"
         "nikkinikki-org/OpenWrt-nikki|https://github.com/nikkinikki-org/OpenWrt-nikki.git|main|nikki luci-app-nikki mihomo-meta"
+        "sbwml/luci-app-openlist2|https://github.com/sbwml/luci-app-openlist2.git||luci-app-openlist2 openlist2"
     )
 
     feeds_path=$(get_feeds_path)
@@ -219,6 +219,11 @@ install_custom_feed() {
     done
 
     if ! sync_repo_root_package_to_feed_dir "https://github.com/adminchenyu/eMMC-Health.git" "main" "$custom_feed_dir" "adminchenyu/eMMC-Health" "luci-app-emmc-health"; then
+        rm -rf "$custom_feed_dir"
+        return 1
+    fi
+
+    if ! sync_repo_root_package_to_feed_dir "https://github.com/zzsj0928/luci-app-pushbot.git" "master" "$custom_feed_dir" "zzsj0928/luci-app-pushbot" "luci-app-pushbot"; then
         rm -rf "$custom_feed_dir"
         return 1
     fi

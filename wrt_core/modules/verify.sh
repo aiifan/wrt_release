@@ -9,6 +9,7 @@ verify_custom_feed_installed_paths() {
         luci-app-adguardhome luci-app-mosdns v2ray-geodata luci-app-easytier
         nikki luci-app-nikki mihomo-meta luci-app-emmc-health
         luci-app-openlist2 luci-app-pushbot
+        ddns-go luci-app-ddns-go
     )
     local missing_package_dirs=()
 

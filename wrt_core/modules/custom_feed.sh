@@ -172,6 +172,7 @@ install_custom_feed() {
         nikki luci-app-nikki mihomo-meta
         open-app-filter luci-app-oaf lucky luci-app-lucky luci-app-easytier
         luci-app-emmc-health luci-app-openlist2 luci-app-pushbot
+        ddns-go luci-app-ddns-go
     )
     local custom_feed_sources=()
     local missing_feed_dirs=()

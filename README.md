@@ -1,3 +1,15 @@
+<!--
+ * @Author: aiifan
+ * @Date: 2026-09-29 08:21:04
+ * @LastEditTime: 2026-09-29 10:13:36
+ * @LastEditors: aiifan aiifan@foxmail.com
+ * @Description: Description of the file
+-->
+
+# 说明
+
+本仓库为自用亚瑟和雅典娜构建的 OpenWrt 固件。WiFi密码不对。插件删除了许多，添加了一些自己使用的插件。
+
 # 编译指南
 
 本仓库用于按设备配置自动拉取 OpenWrt / ImmortalWrt / LiBwrt 源码、应用自定义补丁与软件包配置，并输出固件到 `firmware/` 目录。

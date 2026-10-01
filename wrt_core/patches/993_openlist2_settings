@@ -1,9 +1,10 @@
 #!/bin/sh
 
 # OpenList2 固化配置（uci-defaults，首次启动执行一次）
-# 仅迁移数据目录：
-# - data_dir（数据库/搜索索引）指向 eMMC 大分区，重刷固件不丢库
-# - temp_dir（解压/打包中转工作区）随之指向外置分区，不落 tmpfs 避免吃内存
+# 1. 通过 block-mount 的 UCI fstab 机制持久挂载 eMMC 大分区 mmcblk0p27
+# 2. 迁移 openlist2 数据目录：
+#    - data_dir（数据库/搜索索引）指向 eMMC 大分区，重刷固件不丢库
+#    - temp_dir（解压/打包中转工作区）随之指向外置分区，不落 tmpfs 避免吃内存
 # 判断依据用块设备节点 /dev/mmcblk0p27（devtmpfs 早期就绪），
 # 不用挂载点目录（uci-defaults 执行早于 fstab 挂载）；
 # 分区方案不同的设备保持包默认目录。
@@ -13,6 +14,22 @@
 [ -f /etc/config/openlist2 ] || exit 0
 
 if [ -b /dev/mmcblk0p27 ]; then
+    # --- 持久挂载 mmcblk0p27（block-mount UCI fstab 机制）---
+    mkdir -p /mnt/mmcblk0p27
+
+    uci -q set fstab.mmcblk0p27=mount
+    uci -q set fstab.mmcblk0p27.target='/mnt/mmcblk0p27'
+    uci -q set fstab.mmcblk0p27.device='/dev/mmcblk0p27'
+    uci -q set fstab.mmcblk0p27.fstype='ext4'
+    uci -q set fstab.mmcblk0p27.options='rw'
+    uci -q set fstab.mmcblk0p27.enabled='1'
+    uci -q commit fstab
+
+    # 确保 fstab 服务启用，首次启动立即挂载
+    /etc/init.d/fstab enable 2>/dev/null
+    /sbin/block mount 2>/dev/null
+
+    # --- openlist2 数据目录 ---
     uci -q set openlist2.@openlist2[0].data_dir='/mnt/mmcblk0p27/openlist2'
     uci -q set openlist2.@openlist2[0].temp_dir='/mnt/mmcblk0p27/openlist2/temp'
 fi

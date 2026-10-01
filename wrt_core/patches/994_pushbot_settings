@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# PushBot 固化配置（uci-defaults，首次启动执行一次）
+# 网页总开关保存后只 start/stop 不 enable，重启后服务不自启；
+# 且包默认 pushbot_enable='0'，主脚本 enable_detection 检测到 0 会自杀退出。
+# 这里固化：总开关置 1 + init.d 开机自启，刷机即生效，无需手工写入。
+# 未安装 pushbot 的设备（无 /etc/config/pushbot）跳过，保持包默认行为。
+# 注意：init.d enable 后若网页端手动关闭总开关（enable=0），
+# 重启时脚本 enable_detection 仍会自杀退出，关闭行为不受影响。
+
+[ -f /etc/config/pushbot ] || exit 0
+
+uci set pushbot.pushbot.pushbot_enable='1'
+uci commit pushbot
+
+/etc/init.d/pushbot enable
+
+exit 0

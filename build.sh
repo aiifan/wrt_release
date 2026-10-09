@@ -461,9 +461,23 @@ make -j$(($(nproc) + 1)) || make -j1 V=s
 FIRMWARE_DIR="$BASE_PATH/../firmware"
 \rm -rf "$FIRMWARE_DIR"
 mkdir -p "$FIRMWARE_DIR"
-find "$TARGET_DIR" -type f \( -name "*.bin" -o -name "*.manifest" -o -name "*efi.img.gz" -o -name "*.itb" -o -name "*.fip" -o -name "*.ubi" -o -name "*rootfs.tar.gz" \) -exec cp -f {} "$FIRMWARE_DIR/" \;
-\rm -f "$BASE_PATH/../firmware/Packages.manifest" 2>/dev/null
+    find "$TARGET_DIR" -type f \( -name "*.bin" -o -name "*.manifest" -o -name "*efi.img.gz" -o -name "*.itb" -o -name "*.fip" -o -name "*.ubi" -o -name "*rootfs.tar.gz" \) -exec cp -f {} "$FIRMWARE_DIR/" \;
+    \rm -f "$BASE_PATH/../firmware/Packages.manifest" 2>/dev/null
 
-if [[ -d action_build ]]; then
-    make clean
-fi
+    # 收集 luci-app-xray 相关 ipk，供不刷机时 opkg 直接安装到既有固件。
+    # 三件套为纯脚本包、openwrt-xray 为 CGO_ENABLED=0 静态 Go 二进制、
+    # v2ray-geoip/geosite 为数据文件，均与固件 ABI 无关；wget 为 status 页依赖。
+    IPK_DIR="$FIRMWARE_DIR/ipk"
+    mkdir -p "$IPK_DIR"
+    find "$BASE_PATH/../$BUILD_DIR/bin/packages" -type f -name "*.ipk" \
+        \( -name "luci-app-xray*" -o -name "openwrt-xray*" \
+        -o -name "v2ray-geoip*" -o -name "v2ray-geosite*" \
+        -o -name "wget_[0-9]*" \) \
+        -exec cp -f {} "$IPK_DIR/" \;
+    # kmod-nft-tproxy 按子平台加前缀收集（ipq60xx=亚瑟 / ipq807x=雅典娜，vermagic 各不相同）
+    find "$TARGET_DIR" -type f -name "kmod-nft-tproxy*.ipk" \
+        -exec bash -c 'sub="$(basename "$(dirname "$(dirname "$1")")")"; cp -f "$1" "$0/${sub}_$(basename "$1")"' "$IPK_DIR" {} \;
+
+    if [[ -d action_build ]]; then
+        make clean
+    fi

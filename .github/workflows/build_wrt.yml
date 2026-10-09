@@ -181,4 +181,6 @@ jobs:
         uses: actions/upload-artifact@v7.0.1
         with:
           name: ${{ env.BUILD_DATE }}_${{ inputs.model }}
-          path: ./firmware/*.*
+          path: |
+            ./firmware/*.*
+            ./firmware/ipk/*.ipk

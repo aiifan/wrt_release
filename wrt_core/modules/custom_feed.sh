@@ -155,8 +155,11 @@ install_custom_feed() {
     local custom_feed_worktree_dir
     local custom_feed_name
 
+    # xray-core 已改由 yichya/openwrt-xray 提供（版本随 Xray-core 官方更新，
+    # 与 luci-app-xray 3.7.2 配套），此处不再同步 kenzok8 的 xray-core，
+    # 避免 DEPENDS +xray-core 出现双提供者歧义。
     local base_custom_feed_packages=(
-        xray-core xray-plugin dns2tcp dns2socks haproxy hysteria \
+        xray-plugin dns2tcp dns2socks haproxy hysteria \
         naiveproxy shadowsocks-rust sing-box v2ray-core v2ray-geodata geoview v2ray-plugin \
         tuic-client chinadns-ng ipt2socks tcping trojan-plus simple-obfs shadowsocksr-libev \
         v2dat adguardhome luci-app-adguardhome ddns-go \
@@ -173,6 +176,7 @@ install_custom_feed() {
         open-app-filter luci-app-oaf lucky luci-app-lucky luci-app-easytier
         luci-app-emmc-health luci-app-openlist2 luci-app-pushbot
         ddns-go luci-app-ddns-go
+        luci-app-xray luci-app-xray-geodata luci-app-xray-status openwrt-xray
     )
     local custom_feed_sources=()
     local missing_feed_dirs=()
@@ -196,6 +200,7 @@ install_custom_feed() {
         "sbwml/luci-app-mosdns|https://github.com/sbwml/luci-app-mosdns.git|v5|mosdns luci-app-mosdns"
         "nikkinikki-org/OpenWrt-nikki|https://github.com/nikkinikki-org/OpenWrt-nikki.git|main|nikki luci-app-nikki mihomo-meta"
         "sbwml/luci-app-openlist2|https://github.com/sbwml/luci-app-openlist2.git||luci-app-openlist2 openlist2"
+        "aiifan/luci-app-xray|https://github.com/aiifan/luci-app-xray.git||core geodata status"
     )
 
     feeds_path=$(get_feeds_path)
@@ -219,12 +224,25 @@ install_custom_feed() {
         fi
     done
 
+    # luci-app-xray 仓库内的包目录按功能命名（core/geodata/status），
+    # 统一改名为包名目录，保持 custom_feed 目录命名惯例。
+    if [ -d "$custom_feed_dir/core" ] && [ -d "$custom_feed_dir/geodata" ] && [ -d "$custom_feed_dir/status" ]; then
+        mv "$custom_feed_dir/core" "$custom_feed_dir/luci-app-xray"
+        mv "$custom_feed_dir/geodata" "$custom_feed_dir/luci-app-xray-geodata"
+        mv "$custom_feed_dir/status" "$custom_feed_dir/luci-app-xray-status"
+    fi
+
     if ! sync_repo_root_package_to_feed_dir "https://github.com/adminchenyu/eMMC-Health.git" "main" "$custom_feed_dir" "adminchenyu/eMMC-Health" "luci-app-emmc-health"; then
         rm -rf "$custom_feed_dir"
         return 1
     fi
 
     if ! sync_repo_root_package_to_feed_dir "https://github.com/zzsj0928/luci-app-pushbot.git" "master" "$custom_feed_dir" "zzsj0928/luci-app-pushbot" "luci-app-pushbot"; then
+        rm -rf "$custom_feed_dir"
+        return 1
+    fi
+
+    if ! sync_repo_root_package_to_feed_dir "https://github.com/yichya/openwrt-xray.git" "master" "$custom_feed_dir" "yichya/openwrt-xray" "openwrt-xray"; then
         rm -rf "$custom_feed_dir"
         return 1
     fi

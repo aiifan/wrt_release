@@ -22,7 +22,9 @@ fi
 
 FEEDS_CONF="feeds.conf.default"
 GOLANG_REPO="https://github.com/sbwml/packages_lang_golang"
-GOLANG_BRANCH="26.x"
+# Xray-core 26.9.30 起 go.mod 要求 go 1.27，golang-package.mk 强制 GOTOOLCHAIN=local
+# 无法自动升级工具链，需使用 sbwml 27.x 分支（go 1.27.2）。
+GOLANG_BRANCH="27.x"
 THEME_SET="argon"
 LAN_ADDR="10.0.0.1"
 
